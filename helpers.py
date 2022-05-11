@@ -14,7 +14,7 @@ def possible_plays(board: List[List[int]], x_pos: int, y_pos: int, directions: L
             c_y_pos += c_dir
             if board[c_x_pos][c_y_pos] == None: 
                 open_spots.append((c_x_pos, c_y_pos))
-            else:
+            elif board[c_x_pos][c_y_pos].color:
                 elimination_spots.append((c_x_pos, c_y_pos))
                 break
 
