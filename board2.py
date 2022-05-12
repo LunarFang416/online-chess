@@ -1,10 +1,14 @@
+import pygame
+from sys import exit
+
 pygame.init()
 
-ScreenWidth=800
-ScreenHeight=800
+ScreenWidth=600
+ScreenHeight=600
 
 screen=pygame.display.set_mode((ScreenWidth,ScreenHeight))
 blackorWhite=[]
+clock = pygame.time.Clock()
 
 class Square:
     def __init__(self,xpos,ypos,length):
@@ -12,7 +16,7 @@ class Square:
         self.x=xpos
         self.y=ypos
         self.grid=length
-        isWhite=1;
+        isWhite=1
 
     def initialize(self,x,y,is_white):
 
@@ -26,7 +30,7 @@ class Square:
     
     def createBoard(self):
         board=[]
-        isWhite=1;
+        isWhite=1
         for y in range(8):
             row=[]
             for x in range(8):
@@ -37,9 +41,6 @@ class Square:
                 else:
                     blackorWhite.append(1)
             board.append(row)
-
-
-            
 
 
     def boardGUI(self):
@@ -68,10 +69,17 @@ class Square:
                 pygame.display.update()
             isWhite*=-1
 
-
-pygame.time.delay(2)
-b=Square(0,0,100)
-print(b.createBoard())
-print(b.boardGUI())
+while True:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT: 
+            print(event)
+            pygame.quit()
+            exit()
+    pygame.time.delay(2)
+    b=Square(0,0,100)
+    # print(b.createBoard())
+    print(b.boardGUI())
+    # pygame.display.update()
+    clock.tick(60)
 #pygame.quit()
 
