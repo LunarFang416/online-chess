@@ -52,6 +52,13 @@ class Square:
     def neutralize(self):
         self.current_color = self.neutral_color
 
+    def update(self, x_pos, y_pos, sq_x, sq_y, neutral_color):
+        self.x_pos, self.y_pos = x_pos, y_pos
+        self.sq_x, self.sq_y = sq_x, sq_y
+        self.neutral_color = neutral_color
+        self.neutralize()
+        if self.piece: self.piece.update_pos(x_pos, y_pos)
+
     def __str__(self):
         return f"{self.piece} at {self.x_pos}, {self.y_pos}"
 
@@ -126,6 +133,19 @@ class Board:
         if self.is_selected:
             self.is_selected.neutralize()
             self.neutralize_board()
+            print(self.possible_moves)
+            if (adj_x, adj_y) in self.possible_moves:
+                self.swap_positions(self.is_selected, self.board[adj_x][adj_y])
+                self.is_selected = None
+                return True
+            
+            if (adj_x, adj_y) in self.possible_targets:
+                self.swap_positions(self.is_selected, self.board[adj_x][adj_y], eliminate=True)
+                # self.eliminate_position(self.board[adj_x][adj_y])
+                self.is_selected = None
+
+                return True
+
             if self.is_selected == self.board[adj_x][adj_y]:
                 self.is_selected = None
                 return True
@@ -138,7 +158,7 @@ class Board:
             return True
         return False
 
-    def prospective_plays(self, square):
+    def prospective_plays(self, square) -> None:
         self.possible_moves, self.possible_targets = square.piece.possible_moves(self.board)
         print(self.possible_moves)
         print(self.possible_targets)
@@ -146,13 +166,28 @@ class Board:
             self.board[x][y].is_possible_move()
         for x, y in self.possible_targets:
             self.board[x][y].is_target()
-        
 
-
-    def neutralize_board(self):
+    def neutralize_board(self) -> None:
         for x, y in self.possible_moves:
             self.board[x][y].neutralize()
         for x, y in self.possible_targets:
             self.board[x][y].neutralize()
+
+    def swap_positions(self, sq1: Square, sq2: Square, eliminate=False):
+        x1, y1, sq_x1, sq_y1 = sq1.x_pos, sq1.y_pos, sq1.sq_x, sq1.sq_y
+        x2, y2, sq_x2, sq_y2 = sq2.x_pos, sq2.y_pos, sq2.sq_x, sq2.sq_y
+        nc1, nc2 = sq1.neutral_color, sq2.neutral_color
+        sq2.update(x1, y1, sq_x1, sq_y1, nc1)
+        sq1.update(x2, y2, sq_x2, sq_y2, nc2)
+        self.board[x1][y1], self.board[x2][y2] = sq2, sq1
+        if eliminate:
+            self.board[x1][y1].piece.in_game = False
+            self.board[x1][y1].piece = None
+            self.board[x1][y1].player_color = None
+
+    def eliminate_position(self, sq: Square):
+        sq.piece.in_game = False
+        sq.piece = None
+        sq.player_color = None
 
 
