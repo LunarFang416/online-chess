@@ -1,3 +1,4 @@
+import pygame
 from typing import List, Tuple
 from pieces import King, Queen, Pawn, Rook, Bishop, Knight, ChessPiece
 
@@ -21,7 +22,11 @@ PIECES_DATA = [
 ]
 
 class Board:
-    def __init__(self):
+    # These values are just temporary
+    BOARD_SIDE_LENGTH = 600
+    PIECE_SIDE_LENGTH = 30
+
+    def __init__(self) -> None:
         self.rows = 8
         self.col = 8
         self.board = [[None for i in range(8)] for j in range(8)]
@@ -29,11 +34,19 @@ class Board:
             for piece in PIECES_DATA[i]:
                 for x, y in PIECES_DATA[i][piece]:
                     self.board[x][y] = piece(x, y, i)
-                
-
-        print(self.board)
     
+    def draw(self, screen) -> None:
+        # Draw board first
+        # Just for test, its ugly asf rn
+        for row in self.board:
+            for piece in row:
+                if piece: 
+                    piece_image = pygame.image.load(piece.image)
+                    piece_image_rect = piece_image.get_rect(bottomleft = (piece.y_pos * Board.PIECE_SIDE_LENGTH, piece.x_pos * Board.PIECE_SIDE_LENGTH))
+                    screen.blit(piece_image, piece_image_rect)
 
 
-print(PIECES_DATA)
+
+# print(PIECES_DATA)
 b = Board()
+# print(b.draw(pygame.display.set_mode((777, 666))))

@@ -12,19 +12,19 @@ SOUTH_WEST = [1,-1]
 NORTH_EAST = [-1,1]
 NORTH_WEST = [-1,-1]
 
-WHITE_KING_IMAGE = os.path.join("chess_piece", "white_king.svg")
-WHITE_QUEEN_IMAGE = os.path.join("chess_piece", "white_queen.svg")
-WHITE_BISHOP_IMAGE = os.path.join("chess_piece", "white_bishop.svg")
-WHITE_ROOK_IMAGE = os.path.join("chess_piece", "white_rook.svg")
-WHITE_PAWN_IMAGE = os.path.join("chess_piece", "white_pawn.svg")
-WHITE_KNIGHT_IMAGE = os.path.join("chess_piece", "white_knight.svg")
+WHITE_KING_IMAGE = os.path.join("chess_pieces", "white_king.svg")
+WHITE_QUEEN_IMAGE = os.path.join("chess_pieces", "white_queen.svg")
+WHITE_BISHOP_IMAGE = os.path.join("chess_pieces", "white_bishop.svg")
+WHITE_ROOK_IMAGE = os.path.join("chess_pieces", "white_rook.svg")
+WHITE_PAWN_IMAGE = os.path.join("chess_pieces", "white_pawn.svg")
+WHITE_KNIGHT_IMAGE = os.path.join("chess_pieces", "white_knight.svg")
 
-BLACK_KING_IMAGE = os.path.join("chess_piece", "black_king.svg")
-BLACK_QUEEN_IMAGE = os.path.join("chess_piece", "black_queen.svg")
-BLACK_BISHOP_IMAGE = os.path.join("chess_piece", "black_bishop.svg")
-BLACK_ROOK_IMAGE = os.path.join("chess_piece", "black_rook.svg")
-BLACK_PAWN_IMAGE = os.path.join("chess_piece", "black_pawn.svg")
-BLACK_KNIGHT_IMAGE = os.path.join("chess_piece", "black_knight.svg")
+BLACK_KING_IMAGE = os.path.join("chess_pieces", "black_king.svg")
+BLACK_QUEEN_IMAGE = os.path.join("chess_pieces", "black_queen.svg")
+BLACK_BISHOP_IMAGE = os.path.join("chess_pieces", "black_bishop.svg")
+BLACK_ROOK_IMAGE = os.path.join("chess_pieces", "black_rook.svg")
+BLACK_PAWN_IMAGE = os.path.join("chess_pieces", "black_pawn.svg")
+BLACK_KNIGHT_IMAGE = os.path.join("chess_pieces", "black_knight.svg")
 
 # For color 1: white, 0: black
 
@@ -74,12 +74,16 @@ class ChessPiece():
         pass
 
     def __str__(self) -> str:
-        return f"[ {self.name} at <{self.x_pos}, {self.y_pos}> ]"
+        return f"[ {self.color} {type(self).__name__} at <{self.x_pos}, {self.y_pos}>]"
 
 
 class Queen(ChessPiece):
     directions = [NORTH, SOUTH, EAST, WEST, NORTH_WEST, SOUTH_WEST, NORTH_EAST, SOUTH_EAST]
-    color = [BLACK_QUEEN_IMAGE, WHITE_QUEEN_IMAGE]
+    COLOR = [BLACK_QUEEN_IMAGE, WHITE_QUEEN_IMAGE]
+    
+    def __init__(self, x_pos: int, y_pos: int, color: int, **kwargs):
+        super(Queen, self).__init__(x_pos, y_pos, color, **kwargs)
+        self.image = Queen.COLOR[self.color]
 
     def possible_moves(self, board: List[List[int]]) -> Tuple[List[List[int]], List[List[int]]]:
         return self.possible_plays(board, self.x_pos, self.y_pos, Queen.directions, 8)
@@ -87,7 +91,11 @@ class Queen(ChessPiece):
 
 class King(ChessPiece):
     directions = [NORTH, SOUTH, EAST, WEST, NORTH_WEST, SOUTH_WEST, NORTH_EAST, SOUTH_EAST]
-    color = [BLACK_KING_IMAGE, WHITE_KING_IMAGE]
+    COLOR = [BLACK_KING_IMAGE, WHITE_KING_IMAGE]
+
+    def __init__(self, x_pos: int, y_pos: int, color: int, **kwargs):
+        super(King, self).__init__(x_pos, y_pos, color, **kwargs)
+        self.image = King.COLOR[self.color]
     
     def possible_moves(self, board: List[List[int]]) -> Tuple[List[List[int]], List[List[int]]]:
         return self.possible_plays(board, self.x_pos, self.y_pos, King.directions, 1)
@@ -101,14 +109,22 @@ class King(ChessPiece):
 
 class Bishop(ChessPiece):
     directions = [NORTH_WEST, SOUTH_WEST, NORTH_EAST, SOUTH_EAST]
-    color = [BLACK_BISHOP_IMAGE, WHITE_BISHOP_IMAGE]
+    COLOR = [BLACK_BISHOP_IMAGE, WHITE_BISHOP_IMAGE]
+
+    def __init__(self, x_pos: int, y_pos: int, color: int, **kwargs):
+        super(Bishop, self).__init__(x_pos, y_pos, color, **kwargs)
+        self.image = Bishop.COLOR[self.color]
     
     def possible_moves(self, board: List[List[int]]) -> Tuple[List[List[int]], List[List[int]]]:
         return self.possible_plays(board, self.x_pos, self.y_pos, Bishop.directions, 8)
 
 class Rook(ChessPiece):
     directions = [NORTH, SOUTH, EAST, WEST]
-    color = [BLACK_ROOK_IMAGE, WHITE_ROOK_IMAGE]
+    COLOR = [BLACK_ROOK_IMAGE, WHITE_ROOK_IMAGE]
+
+    def __init__(self, x_pos: int, y_pos: int, color: int, **kwargs):
+        super(Rook, self).__init__(x_pos, y_pos, color, **kwargs)
+        self.image = Rook.COLOR[self.color]
 
     def possible_moves(self, board: List[List[int]]) -> Tuple[List[List[int]], List[List[int]]]:
         return self.possible_plays(board, self.x_pos, self.y_pos, Rook.directions, 8)
@@ -117,7 +133,11 @@ class Rook(ChessPiece):
 class Pawn(ChessPiece):
     directions = [NORTH]
     elim_directions = [NORTH_EAST, NORTH_WEST]
-    color = [BLACK_PAWN_IMAGE, WHITE_PAWN_IMAGE]
+    COLOR = [BLACK_PAWN_IMAGE, WHITE_PAWN_IMAGE]
+
+    def __init__(self, x_pos: int, y_pos: int, color: int, **kwargs):
+        super(Pawn, self).__init__(x_pos, y_pos, color, **kwargs)
+        self.image = Pawn.COLOR[self.color]
 
     def possible_moves(self, board: List[List[int]]) -> Tuple[List[List[int]], List[List[int]]]:
         if self.pawn_move == 0:
@@ -132,7 +152,11 @@ class Pawn(ChessPiece):
 
 class Knight(ChessPiece):
     directions = [[2, 1], [2, -1], [-2, -1], [-2, 1], [-1, 2], [-1, -2], [1, 2], [-1, 2]]
-    color = [BLACK_KNIGHT_IMAGE, WHITE_KNIGHT_IMAGE]
+    COLOR = [BLACK_KNIGHT_IMAGE, WHITE_KNIGHT_IMAGE]
+
+    def __init__(self, x_pos: int, y_pos: int, color: int, **kwargs):
+        super(Knight, self).__init__(x_pos, y_pos, color, **kwargs)
+        self.image = Knight.COLOR[self.color]
 
     def possible_moves(self, board: List[List[int]]) -> Tuple[List[List[int]], List[List[int]]]:
         return self.possible_plays(board, self.x_pos, self.y_pos, Knight.directions, 1)
