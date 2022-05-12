@@ -34,6 +34,7 @@ class ChessPiece():
         self.y_pos = y_pos
         self.color = color
         self.in_game = True
+        self.is_selected = False
         self.computer = kwargs.get("computer")
         self.pawn_move = kwargs.get("pawn_move")
     
@@ -51,11 +52,11 @@ class ChessPiece():
             while legal_move(c_x_pos, c_y_pos, r_dir, c_dir, row, col) and count != max_distance:
                 c_x_pos += r_dir
                 c_y_pos += c_dir
-                if board[c_x_pos][c_y_pos] == None: 
+                if board[c_x_pos][c_y_pos].piece == None: 
                     open_spots.append((c_x_pos, c_y_pos))
                     count += 1
                     continue
-                elif board[c_x_pos][c_y_pos].color == (not self.color):
+                elif board[c_x_pos][c_y_pos].piece.color == (not self.color):
                     elimination_spots.append((c_x_pos, c_y_pos))
                 break
                 
@@ -131,8 +132,8 @@ class Rook(ChessPiece):
 
 
 class Pawn(ChessPiece):
-    directions = [NORTH]
-    elim_directions = [NORTH_EAST, NORTH_WEST]
+    directions = [[SOUTH], [NORTH]]
+    elim_directions = [[SOUTH_EAST, SOUTH_WEST], [NORTH_EAST, NORTH_WEST]]
     COLOR = [BLACK_PAWN_IMAGE, WHITE_PAWN_IMAGE]
 
     def __init__(self, x_pos: int, y_pos: int, color: int, **kwargs):
@@ -141,12 +142,15 @@ class Pawn(ChessPiece):
 
     def possible_moves(self, board: List[List[int]]) -> Tuple[List[List[int]], List[List[int]]]:
         if self.pawn_move == 0:
-            reg_moves, elim_moves = self.possible_plays(board, self.x_pos, self.y_pos, Pawn.directions, 2)
-            elim_moves += self.possible_plays(board, self.x_pos, self.y_pos, Pawn.elim_directions, 1)[1]
+            print(self.color)
+            reg_moves, elim_moves = self.possible_plays(board, self.x_pos, self.y_pos, Pawn.directions[self.color], 2)
+            elim_moves += self.possible_plays(board, self.x_pos, self.y_pos, Pawn.elim_directions[self.color], 1)[1]
+            self.pawn_move += 1
             return (reg_moves, elim_moves)
         else:
-            reg_moves, elim_moves = self.possible_plays(board, self.x_pos, self.y_pos, Pawn.directions, 1)
-            elim_moves += self.possible_plays(board, self.x_pos, self.y_pos, Pawn.elim_directions, 1)[1]
+            print(self.color)
+            reg_moves, elim_moves = self.possible_plays(board, self.x_pos, self.y_pos, Pawn.directions[self.color], 1)
+            elim_moves += self.possible_plays(board, self.x_pos, self.y_pos, Pawn.elim_directions[self.color], 1)[1]
 
             return (reg_moves, elim_moves)
 
