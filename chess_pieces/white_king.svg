@@ -1,0 +1,16 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="body_1" width="367" height="122">
+
+<g transform="matrix(1.3592594 0 0 1.3555555 0 0)">
+	<g transform="matrix(1 0 0 1 0 0)">
+        <path d="M22.5 11.63L22.5 6" stroke="#000000" stroke-width="1.5" fill="none" />
+        <path d="M20 8L25 8" stroke="#000000" stroke-width="1.5" fill="none" />
+        <path d="M22.5 25C 22.5 25 27 17.5 25.5 14.5C 25.5 14.5 24.5 12 22.5 12C 20.5 12 19.5 14.5 19.5 14.5C 18 17.5 22.5 25 22.5 25" stroke="#000000" stroke-width="1.5" fill="#FFFFFF" fill-rule="nonzero" />
+        <path d="M11.5 37C 17 40.5 27 40.5 32.5 37L32.5 37L32.5 30C 32.5 30 41.5 25.5 38.5 19.5C 34.5 13 25 16 22.5 23.5L22.5 23.5L22.5 27L22.5 23.5C 19 16 9.5 13 6.5 19.5C 3.5 25.5 11.5 29.5 11.5 29.5L11.5 29.5L11.5 37z" stroke="#000000" stroke-width="1.5" fill="#FFFFFF" fill-rule="nonzero" />
+        <path d="M11.5 30C 17 27 27 27 32.5 30" stroke="#000000" stroke-width="1.5" fill="none" />
+        <path d="M11.5 33.5C 17 30.5 27 30.5 32.5 33.5" stroke="#000000" stroke-width="1.5" fill="none" />
+        <path d="M11.5 37C 17 34 27 34 32.5 37" stroke="#000000" stroke-width="1.5" fill="none" />
+	</g>
+</g>
+</svg>

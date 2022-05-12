@@ -1,4 +1,5 @@
 import pygame
+import os
 from typing import List, Tuple
 from helpers import legal_move
 
@@ -11,29 +12,32 @@ SOUTH_WEST = [1,-1]
 NORTH_EAST = [-1,1]
 NORTH_WEST = [-1,-1]
 
+WHITE_KING_IMAGE = os.path.join("chess_piece_image", "white_king.svg")
+WHITE_QUEEN_IMAGE = os.path.join("chess_piece_image", "white_queen.svg")
+WHITE_BISHOP_IMAGE = os.path.join("chess_piece_image", "white_bishop.svg")
+WHITE_ROOK_IMAGE = os.path.join("chess_piece_image", "white_rook.svg")
+WHITE_PAWN_IMAGE = os.path.join("chess_piece_image", "white_pawn.svg")
+WHITE_KNIGHT_IMAGE = os.path.join("chess_piece_image", "white_knight.svg")
+
+BLACK_KING_IMAGE = os.path.join("chess_piece_image", "black_king.svg")
+BLACK_QUEEN_IMAGE = os.path.join("chess_piece_image", "black_queen.svg")
+BLACK_BISHOP_IMAGE = os.path.join("chess_piece_image", "black_bishop.svg")
+BLACK_ROOK_IMAGE = os.path.join("chess_piece_image", "black_rook.svg")
+BLACK_PAWN_IMAGE = os.path.join("chess_piece_image", "black_pawn.svg")
+BLACK_KNIGHT_IMAGE = os.path.join("chess_piece_image", "black_knight.svg")
+
 # For color 1: white, 0: black
 
 class ChessPiece():
-    # def __init__(self, name: str, x_pos: int, y_pos: int, image: str, color: int, computer=False, in_game=True):
-    #     self.name = name
-    #     self.x_pos = x_pos
-    #     self.y_pos = y_pos
-    #     self.in_game = in_game
-    #     self.image = image
-    #     self.color = color
-    #     self.computer = computer
-
-    def __init__(self, *args, **kwargs):
-        self.name = kwargs.get("name")
-        self.x_pos = kwargs.get("x_pos")
-        self.y_pos = kwargs.get("y_pos")
-        self.in_game = kwargs.get("in_game")
-        self.image = kwargs.get("image")
-        self.color = kwargs.get("color")
+    def __init__(self, x_pos: int, y_pos: int, color: int, **kwargs) -> None:
+        self.x_pos = x_pos
+        self.y_pos = y_pos
+        self.color = color
+        self.in_game = True
         self.computer = kwargs.get("computer")
         self.pawn_move = kwargs.get("pawn_move")
     
-    def update_pos(self, new_x_pos: int, new_y_pos: int):
+    def update_pos(self, new_x_pos: int, new_y_pos: int) -> None:
         self.x_pos = new_x_pos
         self.y_pos = new_y_pos
 
@@ -62,13 +66,20 @@ class ChessPiece():
         if (new_x_pos, new_y_pos) in self.possible_moves(board)[0]:
             return True
         return False
-    
-    def __str__(self):
+
+    def eliminate(self) -> None:
+        self.in_game = False
+
+    def draw(self, image: str) -> None:
+        pass
+
+    def __str__(self) -> str:
         return f"[ {self.name} at <{self.x_pos}, {self.y_pos}> ]"
 
 
 class Queen(ChessPiece):
     directions = [NORTH, SOUTH, EAST, WEST, NORTH_WEST, SOUTH_WEST, NORTH_EAST, SOUTH_EAST]
+    color = [BLACK_QUEEN_IMAGE, WHITE_QUEEN_IMAGE]
 
     def possible_moves(self, board: List[List[int]]) -> Tuple[List[List[int]], List[List[int]]]:
         return self.possible_plays(board, self.x_pos, self.y_pos, Queen.directions, 8)
@@ -76,33 +87,42 @@ class Queen(ChessPiece):
 
 class King(ChessPiece):
     directions = [NORTH, SOUTH, EAST, WEST, NORTH_WEST, SOUTH_WEST, NORTH_EAST, SOUTH_EAST]
+    color = [BLACK_KING_IMAGE, WHITE_KING_IMAGE]
     
     def possible_moves(self, board: List[List[int]]) -> Tuple[List[List[int]], List[List[int]]]:
         return self.possible_plays(board, self.x_pos, self.y_pos, King.directions, 1)
 
+    def is_check_mate(self):
+        pass
+
+    def is_check(self):
+        pass
+
 
 class Bishop(ChessPiece):
     directions = [NORTH_WEST, SOUTH_WEST, NORTH_EAST, SOUTH_EAST]
+    color = [BLACK_BISHOP_IMAGE, WHITE_BISHOP_IMAGE]
     
     def possible_moves(self, board: List[List[int]]) -> Tuple[List[List[int]], List[List[int]]]:
         return self.possible_plays(board, self.x_pos, self.y_pos, Bishop.directions, 8)
 
 class Rook(ChessPiece):
     directions = [NORTH, SOUTH, EAST, WEST]
+    color = [BLACK_ROOK_IMAGE, WHITE_ROOK_IMAGE]
 
     def possible_moves(self, board: List[List[int]]) -> Tuple[List[List[int]], List[List[int]]]:
         return self.possible_plays(board, self.x_pos, self.y_pos, Rook.directions, 8)
 
 
-class Pawn:
+class Pawn(ChessPiece):
     directions = [NORTH]
     elim_directions = [NORTH_EAST, NORTH_WEST]
+    color = [BLACK_PAWN_IMAGE, WHITE_PAWN_IMAGE]
 
     def possible_moves(self, board: List[List[int]]) -> Tuple[List[List[int]], List[List[int]]]:
         if self.pawn_move == 0:
             reg_moves, elim_moves = self.possible_plays(board, self.x_pos, self.y_pos, Pawn.directions, 2)
             elim_moves += self.possible_plays(board, self.x_pos, self.y_pos, Pawn.elim_directions, 1)[1]
-
             return (reg_moves, elim_moves)
         else:
             reg_moves, elim_moves = self.possible_plays(board, self.x_pos, self.y_pos, Pawn.directions, 1)
@@ -112,6 +132,7 @@ class Pawn:
 
 class Knight(ChessPiece):
     directions = [[2, 1], [2, -1], [-2, -1], [-2, 1], [-1, 2], [-1, -2], [1, 2], [-1, 2]]
+    color = [BLACK_KNIGHT_IMAGE, WHITE_KNIGHT_IMAGE]
 
     def possible_moves(self, board: List[List[int]]) -> Tuple[List[List[int]], List[List[int]]]:
         return self.possible_plays(board, self.x_pos, self.y_pos, Knight.directions, 1)
