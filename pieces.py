@@ -12,19 +12,19 @@ SOUTH_WEST = [1,-1]
 NORTH_EAST = [-1,1]
 NORTH_WEST = [-1,-1]
 
-WHITE_KING_IMAGE = os.path.join("chess_piece_image", "white_king.svg")
-WHITE_QUEEN_IMAGE = os.path.join("chess_piece_image", "white_queen.svg")
-WHITE_BISHOP_IMAGE = os.path.join("chess_piece_image", "white_bishop.svg")
-WHITE_ROOK_IMAGE = os.path.join("chess_piece_image", "white_rook.svg")
-WHITE_PAWN_IMAGE = os.path.join("chess_piece_image", "white_pawn.svg")
-WHITE_KNIGHT_IMAGE = os.path.join("chess_piece_image", "white_knight.svg")
+WHITE_KING_IMAGE = os.path.join("chess_piece", "white_king.svg")
+WHITE_QUEEN_IMAGE = os.path.join("chess_piece", "white_queen.svg")
+WHITE_BISHOP_IMAGE = os.path.join("chess_piece", "white_bishop.svg")
+WHITE_ROOK_IMAGE = os.path.join("chess_piece", "white_rook.svg")
+WHITE_PAWN_IMAGE = os.path.join("chess_piece", "white_pawn.svg")
+WHITE_KNIGHT_IMAGE = os.path.join("chess_piece", "white_knight.svg")
 
-BLACK_KING_IMAGE = os.path.join("chess_piece_image", "black_king.svg")
-BLACK_QUEEN_IMAGE = os.path.join("chess_piece_image", "black_queen.svg")
-BLACK_BISHOP_IMAGE = os.path.join("chess_piece_image", "black_bishop.svg")
-BLACK_ROOK_IMAGE = os.path.join("chess_piece_image", "black_rook.svg")
-BLACK_PAWN_IMAGE = os.path.join("chess_piece_image", "black_pawn.svg")
-BLACK_KNIGHT_IMAGE = os.path.join("chess_piece_image", "black_knight.svg")
+BLACK_KING_IMAGE = os.path.join("chess_piece", "black_king.svg")
+BLACK_QUEEN_IMAGE = os.path.join("chess_piece", "black_queen.svg")
+BLACK_BISHOP_IMAGE = os.path.join("chess_piece", "black_bishop.svg")
+BLACK_ROOK_IMAGE = os.path.join("chess_piece", "black_rook.svg")
+BLACK_PAWN_IMAGE = os.path.join("chess_piece", "black_pawn.svg")
+BLACK_KNIGHT_IMAGE = os.path.join("chess_piece", "black_knight.svg")
 
 # For color 1: white, 0: black
 
