@@ -11,7 +11,7 @@ pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 
-b = Board(1)
+b = Board(0)
 surf = pygame.Surface((BOARD_WIDTH, BOARD_HEIGHT))
 surf_rect = surf.get_rect(center = (WIDTH / 2, HEIGHT / 2))
 
@@ -23,7 +23,6 @@ while True:
             exit()
         if event.type == pygame.MOUSEBUTTONDOWN:
             x, y = event.pos
-            print(x - 50, y - 50)
             x , y = x - 50, y - 50
             # Sending it in y - 50, and x - 50 as pygame gives coordinates in differnet fipped format
             if 0 <= x <= BOARD_WIDTH and 0 <= y <= BOARD_HEIGHT:

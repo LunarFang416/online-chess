@@ -1,4 +1,3 @@
-import pygame
 import os
 from typing import List, Tuple
 from helpers import legal_move
@@ -46,15 +45,12 @@ class ChessPiece():
         open_spots = []
         elimination_spots = []
         row, col = len(board), len(board[0])
-        print(f"directions = {directions}")
         for r_dir, c_dir in directions: 
             c_x_pos, c_y_pos = x_pos, y_pos
             count = 0
             while legal_move(c_x_pos, c_y_pos, r_dir, c_dir, row, col) and count != max_distance:
                 c_x_pos += r_dir
                 c_y_pos += c_dir
-                print(c_x_pos, c_y_pos)
-                print(f"piece color = {self.color}")
                 if board[c_x_pos][c_y_pos].piece == None: 
                     open_spots.append((c_x_pos, c_y_pos))
                     count += 1
@@ -72,9 +68,6 @@ class ChessPiece():
 
     def eliminate(self) -> None:
         self.in_game = False
-
-    def draw(self, image: str) -> None:
-        pass
 
     def __str__(self) -> str:
         return f"[ {self.color} {type(self).__name__} at <{self.x_pos}, {self.y_pos}>]"
@@ -103,11 +96,42 @@ class King(ChessPiece):
     def possible_moves(self, board: List[List[int]]) -> Tuple[List[List[int]], List[List[int]]]:
         return self.possible_plays(board, self.x_pos, self.y_pos, King.directions, 1)
 
-    def is_check_mate(self):
-        pass
+    def is_check_mate(self, board):
+        king_possible_moves, king_possible_elims = self.possible_moves(board)
+        all_possibilities = king_possible_moves + king_possible_elims
 
-    def is_check(self):
-        pass
+        if not all_possibilities: return False
+        outcomes = []
+        for x, y in king_possible_moves:
+            all_white_targets = []
+            for row in board:
+                for square in row:
+                    if square.piece and square.piece.color == (not self.color):
+                        all_white_targets += square.piece.possible_moves(board)[1]
+
+            if (x, y) in all_white_targets: outcomes.append(True)
+            else: return False
+
+        board_copy = board[:]
+
+        for x, y in king_possible_elims:
+            all_white_targets = []
+            temp = board_copy[x][y].piece
+            board_copy[x][y].piece = board_copy[self.x_pos][self.y_pos].piece
+            board_copy[self.x_pos][self.y_pos].piece = None
+            
+            for row in board_copy:
+                for square in row:
+                    if square.piece and square.piece.color == (not self.color):
+                        all_white_targets += square.piece.possible_moves(board)[1]
+
+            board_copy[self.x_pos][self.y_pos].piece = board_copy[x][y].piece
+            board_copy[x][y].piece = temp
+            
+            if (x, y) in all_white_targets: outcomes.append(True)
+            else: return False
+        return True
+        
 
 
 class Bishop(ChessPiece):
@@ -144,13 +168,11 @@ class Pawn(ChessPiece):
 
     def possible_moves(self, board: List[List[int]]) -> Tuple[List[List[int]], List[List[int]]]:
         if self.pawn_move == 0:
-            print(self.color)
             reg_moves, elim_moves = self.possible_plays(board, self.x_pos, self.y_pos, Pawn.directions[self.color], 2)
             elim_moves = self.possible_plays(board, self.x_pos, self.y_pos, Pawn.elim_directions[self.color], 1)[1]
             self.pawn_move += 1
             return (reg_moves, elim_moves)
         else:
-            print(self.color)
             reg_moves, elim_moves = self.possible_plays(board, self.x_pos, self.y_pos, Pawn.directions[self.color], 1)
             elim_moves = self.possible_plays(board, self.x_pos, self.y_pos, Pawn.elim_directions[self.color], 1)[1]
 
