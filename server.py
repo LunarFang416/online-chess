@@ -35,4 +35,27 @@ def start():
         thread.start()
         print(f"[ACTIVE CONNECTIONS] {threading.activeCount() - 1}")
 
+
+ def client_threading(conn):
+
+        global playerID, connections
+        if(connections%2):
+            playerID="white"
+        else:
+            playerID="Black"
+            
+        
+        data_string=pickle.dumps(playerID)
+        while(true):
+            
+            
+        
+        
+        
+        
+        
+        
+        
+    
+
 start()
