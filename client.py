@@ -36,3 +36,6 @@ class Network:
             print(e)
 
         return reply
+    
+    def send(self,info):
+        
