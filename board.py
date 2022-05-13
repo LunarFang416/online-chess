@@ -25,6 +25,7 @@ SELECTED = "#FF0000"
 TARGET = "#FF0000"
 POSSIBLE_MOVE = "#0000FF"
 
+
 class Square:
     def __init__(self, piece, x_pos: int, y_pos: int, sq_x: int, sq_y: int,  side_length: int, neutral_color: str,player_color: int):
         self.piece = piece

@@ -1,6 +1,7 @@
 import socket 
 import pickle
-import time
+from board import Board
+import json
 
 HEADER = 4096
 PORT = 5050
@@ -11,28 +12,37 @@ ADDR = (SERVER, PORT)
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-client.connect()
+# client.connect()
 
-
-class Network:
+class Client:
     def __init__(self):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server = SERVER
         self.port = PORT
         self.addr = (self.server, self.port)
         self.board = self.connect()
-        self.board = pickle.loads(self.board)
+        self.board = Board(self.board)
+        self.color = None
 
     def connect(self):
         self.client.connect(self.addr)
-        return self.client.recv(HEADER*8)
+        return pickle.loads(self.send("Pinging to server"))
 
-    def disconnect(self, data):
+    def disconnect(self):
         self.client.close()
+
+    def send(self, data):
         try:
             self.client.send(pickle.dumps(data))
             reply = self.client.recv(HEADER*8)
+            print(pickle.loads(reply))
         except Exception as e:
             print(e)
 
         return reply
+
+c = Client()
+print(c.board)
+input()
+c.send({"data": c.board.board})
+# c.send(DISCONNECT_MESSAGE)
