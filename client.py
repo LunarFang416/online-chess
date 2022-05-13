@@ -37,5 +37,15 @@ class Network:
 
         return reply
     
-    def send(self,info):
+    # maybe we can also use this function as well (we can put the last part of the disconnect function here)?
+    def send(self,info,pick=False):
+        if pick:
+            try:
+                self.client.send(pickle.dumps(data))
+                reply=self.client.recv(HEADER*8)
+            except Exception as e:
+                print(e)
+        return reply 
+            
+            
         
