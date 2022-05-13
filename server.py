@@ -2,6 +2,8 @@ import socket
 import threading
 import pickle
 import json
+import selectors
+
 
 HEADER = 4096
 PORT = 5050
@@ -82,4 +84,18 @@ def start():
         thread.start()
         print(f"[ACTIVE CONNECTIONS] {CONNECTIONS + 1}")
 
-start()
+
+#  def client_threading(conn):
+
+#         global playerID, connections
+#         if(connections%2):
+#             playerID="white"
+#         else:
+#             playerID="Black"
+            
+        
+#         data_string=pickle.dumps(playerID)
+#         while(true):
+            
+            
+# start()
