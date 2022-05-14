@@ -1,6 +1,5 @@
 import os
 from typing import List, Tuple
-from helpers import legal_move
 
 NORTH = [-1,0]
 SOUTH = [1,0]
@@ -41,6 +40,9 @@ class ChessPiece():
         self.x_pos = new_x_pos
         self.y_pos = new_y_pos
 
+    def legal_move(self, x_pos: int, y_pos: int, r_dir: int, c_dir, max_row:int, max_col) -> bool:
+        return 0 <= x_pos + r_dir < max_row and 0 <= y_pos + c_dir < max_col
+
     def possible_plays(self, board: List[List[int]], x_pos: int, y_pos: int, directions: List[List[int]], max_distance : int) -> Tuple[List[List[int]], List[List[int]]]:
         open_spots = []
         elimination_spots = []
@@ -48,7 +50,7 @@ class ChessPiece():
         for r_dir, c_dir in directions: 
             c_x_pos, c_y_pos = x_pos, y_pos
             count = 0
-            while legal_move(c_x_pos, c_y_pos, r_dir, c_dir, row, col) and count != max_distance:
+            while self.legal_move(c_x_pos, c_y_pos, r_dir, c_dir, row, col) and count != max_distance:
                 c_x_pos += r_dir
                 c_y_pos += c_dir
                 if board[c_x_pos][c_y_pos].piece == None: 
@@ -72,7 +74,6 @@ class ChessPiece():
     def __str__(self) -> str:
         return f"[ {self.color} {type(self).__name__} at <{self.x_pos}, {self.y_pos}>]"
 
-
 class Queen(ChessPiece):
     directions = [NORTH, SOUTH, EAST, WEST, NORTH_WEST, SOUTH_WEST, NORTH_EAST, SOUTH_EAST]
     COLOR = [BLACK_QUEEN_IMAGE, WHITE_QUEEN_IMAGE]
@@ -83,7 +84,6 @@ class Queen(ChessPiece):
 
     def possible_moves(self, board: List[List[int]]) -> Tuple[List[List[int]], List[List[int]]]:
         return self.possible_plays(board, self.x_pos, self.y_pos, Queen.directions, 8)
-
 
 class King(ChessPiece):
     directions = [NORTH, SOUTH, EAST, WEST, NORTH_WEST, SOUTH_WEST, NORTH_EAST, SOUTH_EAST]
@@ -96,43 +96,15 @@ class King(ChessPiece):
     def possible_moves(self, board: List[List[int]]) -> Tuple[List[List[int]], List[List[int]]]:
         return self.possible_plays(board, self.x_pos, self.y_pos, King.directions, 1)
 
-    def is_check_mate(self, board):
-        king_possible_moves, king_possible_elims = self.possible_moves(board)
-        all_possibilities = king_possible_moves + king_possible_elims
-
-        if not all_possibilities: return False
-        outcomes = []
-        for x, y in king_possible_moves:
-            all_white_targets = []
-            for row in board:
-                for square in row:
-                    if square.piece and square.piece.color == (not self.color):
-                        all_white_targets += square.piece.possible_moves(board)[1]
-
-            if (x, y) in all_white_targets: outcomes.append(True)
-            else: return False
-
-        board_copy = board[:]
-
-        for x, y in king_possible_elims:
-            all_white_targets = []
-            temp = board_copy[x][y].piece
-            board_copy[x][y].piece = board_copy[self.x_pos][self.y_pos].piece
-            board_copy[self.x_pos][self.y_pos].piece = None
-            
-            for row in board_copy:
-                for square in row:
-                    if square.piece and square.piece.color == (not self.color):
-                        all_white_targets += square.piece.possible_moves(board)[1]
-
-            board_copy[self.x_pos][self.y_pos].piece = board_copy[x][y].piece
-            board_copy[x][y].piece = temp
-            
-            if (x, y) in all_white_targets: outcomes.append(True)
-            else: return False
-        return True
-        
-
+    def is_check_mate(self, board: List[List[int]]) -> bool:
+        all_white_targets = []
+        for row in board:
+            for square in row:
+                if square.piece and square.piece.color == (not self.color):
+                    all_white_targets += square.piece.possible_moves(board)[1]
+        if (self.x_pos, self.y_pos) in all_white_targets:
+            return True
+        return False 
 
 class Bishop(ChessPiece):
     directions = [NORTH_WEST, SOUTH_WEST, NORTH_EAST, SOUTH_EAST]
@@ -155,7 +127,6 @@ class Rook(ChessPiece):
 
     def possible_moves(self, board: List[List[int]]) -> Tuple[List[List[int]], List[List[int]]]:
         return self.possible_plays(board, self.x_pos, self.y_pos, Rook.directions, 8)
-
 
 class Pawn(ChessPiece):
     directions = [[SOUTH], [NORTH]]

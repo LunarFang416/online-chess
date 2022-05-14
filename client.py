@@ -1,15 +1,15 @@
-import socket 
-import pickle
+import socket, pickle, threading
 from board import Board
-import threading
 
 HEADER = 4096
 PORT = 5050
-FORMAT = 'utf-8'
 SERVER = "localhost"
 DISCONNECT_MESSAGE = "!DISCONNECT"
 CONNECTION_ADDED = "!CONNECTION_ADDED"
+CONNECTION_REMOVED = "!CONNECTION_REMOVED"
 BOARD_UPDATE = "!BOARD_UPDATE"
+COLOR_CHANGE = "!COLOR_CHANGE"
+GAME_OVER = "!GAME_OVER"
 ADDR = (SERVER, PORT)
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -23,37 +23,50 @@ class Client:
         self.data = self.connect()
         self.board = Board(self.data["color"])
         self.game = self.data["game"]
-        self.color = None
+        self.color = self.data["color"]
+        self.game_over = False
+        self.win = False
         self.in_game = True
+        self.your_move = self.data["color"]
         self.thread = threading.Thread(target=self.listen)
         self.thread.start()
-
 
     def connect(self):
         self.client.connect(self.addr)
         return self.send({"type":CONNECTION_ADDED, "data": CONNECTION_ADDED})
 
     def disconnect(self):
+        self.send({"type": DISCONNECT_MESSAGE})
         self.client.close()
-        self.in_game = False
-        self.send({"type":"msg", "data": DISCONNECT_MESSAGE})
 
     def send(self, data):
         try:
             self.client.send(pickle.dumps(data))
             reply = pickle.loads(self.client.recv(HEADER*8))
-            print(reply)
             return reply
         except Exception as e:
             print(e)
 
-
     def listen(self):
-        while True and self.in_game:
+        while self.in_game:
             data = pickle.loads(self.client.recv(HEADER*8))
-            print(data)
             if data["type"] == CONNECTION_ADDED: 
                 self.game += 1
             
+            if data["type"] == GAME_OVER:
+                self.board.board = data["data"]
+                self.game_over = True
+                self.win = data["win"]
+            
             if data["type"] == BOARD_UPDATE:
                 self.board.board = data["data"]
+                self.your_move = data["move"]
+            
+            if data["type"] == DISCONNECT_MESSAGE:
+                self.in_game = False
+                break
+            
+            if data["type"] == CONNECTION_REMOVED:
+                self.game = data["data"]
+                self.color = data["data"]
+                self.your_move = data["data"]

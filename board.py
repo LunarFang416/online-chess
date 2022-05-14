@@ -1,6 +1,5 @@
 import pygame
-from typing import List, Tuple
-from pieces import King, Queen, Pawn, Rook, Bishop, Knight, ChessPiece
+from pieces import King, Queen, Pawn, Rook, Bishop, Knight
 
 WHITE_PAWN_POS = [[6, 0], [6, 1], [6, 2], [6, 3], [6, 4], [6, 5], [6, 6], [6, 7]]
 WHITE_QUEEN_POS = [[7, 3]]
@@ -26,13 +25,9 @@ TARGET = "#FF0000"
 POSSIBLE_MOVE = "#0000FF"
 MOVE_PLAYED = "!MOVE_PLAYED"
 
-# sq_x: int, sq_y: int,
-
 class Square:
     def __init__(self, piece, x_pos: int, y_pos: int, side_length: int, neutral_color: str,player_color: int):
         self.piece = piece
-        # self.sq_x = sq_x
-        # self.sq_y = sq_y
         self.x_pos = x_pos
         self.y_pos = y_pos
         self.neutral_color = neutral_color
@@ -88,7 +83,6 @@ class Board:
         for i in range(len(PIECES_DATA)):
             for piece in PIECES_DATA[i][1]:
                 for x, y in PIECES_DATA[i][1][piece]:
-                    # print(x, y)
                     if piece.__name__ == "Pawn":
                         self.board[x][y] = piece(x, y, PIECES_DATA[i][0], pawn_move=0)
                     else:
@@ -106,18 +100,10 @@ class Board:
                 if self.board[i][j]: piece_color = self.board[i][j].color
 
                 self.board[i][j] = Square(self.board[i][j], i, j, Board.PIECE_SIDE_LENGTH, color, piece_color)
-                # if self.color:
-                #     self.board[i][j] = Square(self.board[i][j], i, j, Board.PIECE_SIDE_LENGTH*j, Board.PIECE_SIDE_LENGTH*i, Board.PIECE_SIDE_LENGTH, color, piece_color)
-
-                # else:
-                #     self.board[i][j] = Square(self.board[i][j], i, j, Board.PIECE_SIDE_LENGTH*(7 - j), Board.PIECE_SIDE_LENGTH*(7 - i), Board.PIECE_SIDE_LENGTH, color, piece_color)
-
-                # print(self.board[i][j])
                 isWhite = not isWhite
             isWhite = not isWhite
         self.black_king = self.board[0][4]
         self.white_king = self.board[7][4]
-        # print(self.board)
 
     def __str__(self):
         return f"This is {self.color} player"
@@ -129,14 +115,6 @@ class Board:
                     self.board[i][j].set_dimensions(Board.PIECE_SIDE_LENGTH*j, Board.PIECE_SIDE_LENGTH*i)
                 else:
                     self.board[i][j].set_dimensions(Board.PIECE_SIDE_LENGTH*(7 - j), Board.PIECE_SIDE_LENGTH*(7 - i))
-
-                # if self.color:
-                #     self.board[i][j] = Square(self.board[i][j], i, j, Board.PIECE_SIDE_LENGTH*j, Board.PIECE_SIDE_LENGTH*i, Board.PIECE_SIDE_LENGTH, color, piece_color)
-
-                # else:
-                #     self.board[i][j] = Square(self.board[i][j], i, j, Board.PIECE_SIDE_LENGTH*(7 - j), Board.PIECE_SIDE_LENGTH*(7 - i), Board.PIECE_SIDE_LENGTH, color, piece_color)
-
-                # print(self.board[i][j])
 
         for row in self.board:
             for data in row:
@@ -151,14 +129,11 @@ class Board:
     def select_sqaure(self, screen, x: int, y: int) -> bool:
         print(self.white_king.piece.is_check_mate(self.board))
         adj_x, adj_y = int(x / Board.PIECE_SIDE_LENGTH), int(y / Board.PIECE_SIDE_LENGTH)
-        # Adjusting as board is flipped when playing black
         if not self.color: adj_x, adj_y = 7 - adj_x, 7 - adj_y
-        # print(adj_x, adj_y)
 
         if self.is_selected:
             self.is_selected.neutralize()
             self.neutralize_board()
-            # print(self.possible_moves)
             if (adj_x, adj_y) in self.possible_moves:
                 if type(self.is_selected.piece).__name__ == "Pawn":
                     self.is_selected.piece.pawn_move += 1
@@ -185,8 +160,6 @@ class Board:
 
     def prospective_plays(self, square) -> None:
         self.possible_moves, self.possible_targets = square.piece.possible_moves(self.board)
-        # print(self.possible_moves)
-        # print(self.possible_targets)
         for x, y in self.possible_moves:
             self.board[x][y].is_possible_move()
         for x, y in self.possible_targets:
@@ -209,5 +182,3 @@ class Board:
             self.board[x1][y1].piece.in_game = False
             self.board[x1][y1].piece = None
             self.board[x1][y1].player_color = None
-
-
