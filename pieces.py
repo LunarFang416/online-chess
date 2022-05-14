@@ -170,7 +170,7 @@ class Pawn(ChessPiece):
         if self.pawn_move == 0:
             reg_moves, elim_moves = self.possible_plays(board, self.x_pos, self.y_pos, Pawn.directions[self.color], 2)
             elim_moves = self.possible_plays(board, self.x_pos, self.y_pos, Pawn.elim_directions[self.color], 1)[1]
-            self.pawn_move += 1
+            # self.pawn_move += 1
             return (reg_moves, elim_moves)
         else:
             reg_moves, elim_moves = self.possible_plays(board, self.x_pos, self.y_pos, Pawn.directions[self.color], 1)

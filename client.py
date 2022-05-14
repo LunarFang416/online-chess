@@ -1,18 +1,18 @@
 import socket 
 import pickle
 from board import Board
-import json
+import threading
 
 HEADER = 4096
 PORT = 5050
 FORMAT = 'utf-8'
 SERVER = "localhost"
 DISCONNECT_MESSAGE = "!DISCONNECT"
+CONNECTION_ADDED = "!CONNECTION_ADDED"
+BOARD_UPDATE = "!BOARD_UPDATE"
 ADDR = (SERVER, PORT)
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-# client.connect()
 
 class Client:
     def __init__(self):
@@ -20,29 +20,40 @@ class Client:
         self.server = SERVER
         self.port = PORT
         self.addr = (self.server, self.port)
-        self.board = self.connect()
-        self.board = Board(self.board)
+        self.data = self.connect()
+        self.board = Board(self.data["color"])
+        self.game = self.data["game"]
         self.color = None
+        self.in_game = True
+        self.thread = threading.Thread(target=self.listen)
+        self.thread.start()
+
 
     def connect(self):
         self.client.connect(self.addr)
-        return pickle.loads(self.send("Pinging to server"))
+        return self.send({"type":CONNECTION_ADDED, "data": CONNECTION_ADDED})
 
     def disconnect(self):
         self.client.close()
+        self.in_game = False
+        self.send({"type":"msg", "data": DISCONNECT_MESSAGE})
 
     def send(self, data):
         try:
             self.client.send(pickle.dumps(data))
-            reply = self.client.recv(HEADER*8)
-            print(pickle.loads(reply))
+            reply = pickle.loads(self.client.recv(HEADER*8))
+            print(reply)
+            return reply
         except Exception as e:
             print(e)
 
-        return reply
 
-c = Client()
-print(c.board)
-input()
-c.send({"data": c.board.board})
-# c.send(DISCONNECT_MESSAGE)
+    def listen(self):
+        while True and self.in_game:
+            data = pickle.loads(self.client.recv(HEADER*8))
+            print(data)
+            if data["type"] == CONNECTION_ADDED: 
+                self.game += 1
+            
+            if data["type"] == BOARD_UPDATE:
+                self.board.board = data["data"]

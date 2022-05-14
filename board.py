@@ -24,13 +24,15 @@ PIECES_DATA = [
 SELECTED = "#FF0000"
 TARGET = "#FF0000"
 POSSIBLE_MOVE = "#0000FF"
+MOVE_PLAYED = "!MOVE_PLAYED"
 
+# sq_x: int, sq_y: int,
 
 class Square:
-    def __init__(self, piece, x_pos: int, y_pos: int, sq_x: int, sq_y: int,  side_length: int, neutral_color: str,player_color: int):
+    def __init__(self, piece, x_pos: int, y_pos: int, side_length: int, neutral_color: str,player_color: int):
         self.piece = piece
-        self.sq_x = sq_x
-        self.sq_y = sq_y
+        # self.sq_x = sq_x
+        # self.sq_y = sq_y
         self.x_pos = x_pos
         self.y_pos = y_pos
         self.neutral_color = neutral_color
@@ -40,6 +42,9 @@ class Square:
         self.selected = False
         self.target = False
         self.possible_move = False
+    
+    def set_dimensions(self, sq_x, sq_y):
+        self.sq_x, self.sq_y = sq_x, sq_y
     
     def is_target(self):
         self.current_color = TARGET
@@ -99,12 +104,13 @@ class Board:
                 self.board_color_scheme[i][j] = color
                 piece_color = None
                 if self.board[i][j]: piece_color = self.board[i][j].color
-                
-                if self.color:
-                    self.board[i][j] = Square(self.board[i][j], i, j, Board.PIECE_SIDE_LENGTH*j, Board.PIECE_SIDE_LENGTH*i, Board.PIECE_SIDE_LENGTH, color, piece_color)
 
-                else:
-                    self.board[i][j] = Square(self.board[i][j], i, j, Board.PIECE_SIDE_LENGTH*(7 - j), Board.PIECE_SIDE_LENGTH*(7 - i), Board.PIECE_SIDE_LENGTH, color, piece_color)
+                self.board[i][j] = Square(self.board[i][j], i, j, Board.PIECE_SIDE_LENGTH, color, piece_color)
+                # if self.color:
+                #     self.board[i][j] = Square(self.board[i][j], i, j, Board.PIECE_SIDE_LENGTH*j, Board.PIECE_SIDE_LENGTH*i, Board.PIECE_SIDE_LENGTH, color, piece_color)
+
+                # else:
+                #     self.board[i][j] = Square(self.board[i][j], i, j, Board.PIECE_SIDE_LENGTH*(7 - j), Board.PIECE_SIDE_LENGTH*(7 - i), Board.PIECE_SIDE_LENGTH, color, piece_color)
 
                 # print(self.board[i][j])
                 isWhite = not isWhite
@@ -113,7 +119,25 @@ class Board:
         self.white_king = self.board[7][4]
         # print(self.board)
 
+    def __str__(self):
+        return f"This is {self.color} player"
+
     def draw(self, screen) -> None:
+        for i in range(8):
+            for j in range(8):
+                if self.color: 
+                    self.board[i][j].set_dimensions(Board.PIECE_SIDE_LENGTH*j, Board.PIECE_SIDE_LENGTH*i)
+                else:
+                    self.board[i][j].set_dimensions(Board.PIECE_SIDE_LENGTH*(7 - j), Board.PIECE_SIDE_LENGTH*(7 - i))
+
+                # if self.color:
+                #     self.board[i][j] = Square(self.board[i][j], i, j, Board.PIECE_SIDE_LENGTH*j, Board.PIECE_SIDE_LENGTH*i, Board.PIECE_SIDE_LENGTH, color, piece_color)
+
+                # else:
+                #     self.board[i][j] = Square(self.board[i][j], i, j, Board.PIECE_SIDE_LENGTH*(7 - j), Board.PIECE_SIDE_LENGTH*(7 - i), Board.PIECE_SIDE_LENGTH, color, piece_color)
+
+                # print(self.board[i][j])
+
         for row in self.board:
             for data in row:
                 if data.piece:
@@ -136,14 +160,16 @@ class Board:
             self.neutralize_board()
             # print(self.possible_moves)
             if (adj_x, adj_y) in self.possible_moves:
+                if type(self.is_selected.piece).__name__ == "Pawn":
+                    self.is_selected.piece.pawn_move += 1
                 self.swap_positions(self.is_selected, self.board[adj_x][adj_y])
                 self.is_selected = None
-                return True
+                return MOVE_PLAYED
             
             if (adj_x, adj_y) in self.possible_targets:
                 self.swap_positions(self.is_selected, self.board[adj_x][adj_y], eliminate=True)
                 self.is_selected = None
-                return True
+                return MOVE_PLAYED
 
             if self.is_selected == self.board[adj_x][adj_y]:
                 self.is_selected = None
