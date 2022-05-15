@@ -36,28 +36,19 @@ class Client:
         return self.send({"type":CONNECTION_ADDED, "data": CONNECTION_ADDED})
 
     def disconnect(self):
-        print("disconnect")
         self.send({"type": DISCONNECT_MESSAGE})
-        # self.client.close()
 
     def send(self, data):
         try:
             self.client.send(pickle.dumps(data))
-            print("--------------------")
             if not data["type"] == BOARD_UPDATE and not data["type"] == GAME_OVER:
-                data = pickle.loads(self.client.recv(HEADER*8))
-            # print(f"send {data}")
-            # if data["type"] == DISCONNECT_MESSAGE:
-            #     self.in_game = False
-            #     self.client.close()
-                return data
+                return pickle.loads(self.client.recv(HEADER*8))
         except Exception as e:
             print(e)
 
     def listen(self):
         while self.in_game:
             data = pickle.loads(self.client.recv(HEADER*8))
-            print(f"listening {data}")
             if data["type"] == CONNECTION_ADDED: 
                 self.game += 1
             
@@ -80,4 +71,3 @@ class Client:
                 self.your_move = True
                 self.win = False
                 self.game_over = False
-                # self.board = Board(1)

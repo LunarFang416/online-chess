@@ -40,16 +40,7 @@ def remove_from_game(addr):
                     CURRENT_GAMES.append(temp)
                     return False
 
-def broadcast(game, addr):
-    if len(game) == 2:
-        if game[0][0] == addr: 
-            return game[1][0]
-        else:
-            return game[0][0]
-    return False
-
 def new_game(conn, addr, game):
-    # if broadcast(game, addr):
     msg = conn.recv(HEADER*8)
     print(pickle.loads(msg))
     if msg:
@@ -59,7 +50,6 @@ def new_game(conn, addr, game):
                 print(game)
                 if game:
                     for clients in game:
-                        # if clients[0] != addr:
                         clients[1].sendall(pickle.dumps({"type": CONNECTION_REMOVED, "data": len(game) - 1}))
                 remove_from_game(addr)
                 return False
@@ -94,7 +84,6 @@ def handle_client(conn, addr):
         
         connected = new_game(conn, addr, is_in_game(addr))
     print(f"[DISCONNECTED] {addr[1]} has disconnected")
-    # conn.send(pickle.dumps({"type":DISCONNECT_MESSAGE}))
     conn.close()
 
 def start():
