@@ -25,7 +25,6 @@ def is_in_game(addr):
     for game in CURRENT_GAMES:
         for i in game:
             if i[0] == addr: return game
-    
     return False
 
 def remove_from_game(addr):

@@ -70,3 +70,5 @@ class Client:
                 self.game = data["data"]
                 self.color = data["data"]
                 self.your_move = data["data"]
+                self.win = False
+                self.game_over = False

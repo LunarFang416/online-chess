@@ -126,8 +126,7 @@ class Board:
                 else:
                     pygame.draw.rect(screen,data.current_color,pygame.Rect(data.sq_x, data.sq_y, data.side_length, data.side_length))
     
-    def select_sqaure(self, screen, x: int, y: int) -> bool:
-        print(self.white_king.piece.is_check_mate(self.board))
+    def select_sqaure(self, x: int, y: int) -> bool:
         adj_x, adj_y = int(x / Board.PIECE_SIDE_LENGTH), int(y / Board.PIECE_SIDE_LENGTH)
         if not self.color: adj_x, adj_y = 7 - adj_x, 7 - adj_y
 
