@@ -10,7 +10,6 @@ BOARD_WIDTH, BOARD_HEIGHT = 600, 600
 MOVE_PLAYED = "!MOVE_PLAYED"
 BOARD_UPDATE = "!BOARD_UPDATE"
 GAME_OVER = "!GAME_OVER"
-CURRENT_MOVE = True
 
 def connect():
     global client
@@ -38,12 +37,17 @@ while True:
             client.disconnect()
             pygame.quit()
             exit()
+        count = 0
+        while count == 0:
+            print(f"{client.game >= 2} and {client.your_move} and {(not client.game_over)}")
+            count += 1
         if event.type == pygame.MOUSEBUTTONDOWN and client.game >= 2 and client.your_move and (not client.game_over):
             x, y = event.pos
             x , y = x - 50, y - 50
             # Sending it in y - 50, and x - 50 to align coordinates
             if 0 <= x <= BOARD_WIDTH and 0 <= y <= BOARD_HEIGHT:
                 move = b.select_sqaure(y, x)
+                print(move)
                 if move == MOVE_PLAYED:
                     is_end = False
                     if not client.color: 
@@ -59,8 +63,8 @@ while True:
                             client.send({"type": GAME_OVER, "data": client.board.board, "win": True, "move": True})
                             is_end = True
                     if not is_end:
-                        CURRENT_MOVE, client.your_move = not CURRENT_MOVE, False
-                        client.send({"type": BOARD_UPDATE, "data": client.board.board, "move": True})
+                        client.your_move = False
+                        client.send({"type": BOARD_UPDATE, "data": client.board.board})
 
     screen.fill("white")
     b.draw(surf)
@@ -69,11 +73,9 @@ while True:
     if client.game < 2: 
         text(screen, "WAITING FOR OPPONENT", 'blue', WIDTH / 2, HEIGHT /2)
         b = client.board = Board(client.color)
-
     elif not client.game_over:
         if client.your_move: text(screen, "YOUR MOVE", 'blue', WIDTH / 2, HEIGHT - 20)
         else: text(screen, "OPPONENTS MOVE", 'red', WIDTH / 2, HEIGHT - 20)
-
     else:
         if client.win: text(screen, "YOU WIN :)", 'blue', WIDTH / 2, HEIGHT /2)
         else: text(screen, "YOU LOSE :(", 'red', WIDTH / 2, HEIGHT /2)

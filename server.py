@@ -49,25 +49,30 @@ def broadcast(game, addr):
     return False
 
 def new_game(conn, addr, game):
-    if broadcast(game, addr):
-        msg = conn.recv(HEADER*8)
-        if msg:
-            if pickle.loads(msg)["type"] == DISCONNECT_MESSAGE: 
-                if is_in_game(addr):
-                    remove_from_game(addr)
-                    print(f"[{addr[1]} REMOVED] {addr} removed")
-                    if game:
-                        for clients in game:
-                            clients[1].sendall(pickle.dumps({"type": CONNECTION_REMOVED, "data": len(game)}))
-                    return False
-                else: 
-                    print(f"[{addr[1]} ERROR] while removing {addr}")
-            elif pickle.loads(msg)["type"] == GAME_OVER:
-                print(f"[{addr[1]} GAMEOVER]")
-                for clients in game:
-                    clients[1].sendall(msg)
+    # if broadcast(game, addr):
+    msg = conn.recv(HEADER*8)
+    print(pickle.loads(msg))
+    if msg:
+        if pickle.loads(msg)["type"] == DISCONNECT_MESSAGE: 
+            if is_in_game(addr):
+                print(f"[{addr[1]} REMOVED] {addr} removed")
+                print(game)
+                if game:
+                    for clients in game:
+                        # if clients[0] != addr:
+                        clients[1].sendall(pickle.dumps({"type": CONNECTION_REMOVED, "data": len(game) - 1}))
+                remove_from_game(addr)
+                return False
             else: 
-                for clients in game:
+                print(f"[{addr[1]} ERROR] while removing {addr}")
+        elif pickle.loads(msg)["type"] == GAME_OVER:
+            print(f"[{addr[1]} GAMEOVER]")
+            for clients in game:
+                if clients[0] != addr:
+                    clients[1].sendall(msg)
+        else: 
+            for clients in game:
+                if clients[0] != addr:
                     clients[1].sendall(msg)
     return True
 
@@ -89,7 +94,8 @@ def handle_client(conn, addr):
         
         connected = new_game(conn, addr, is_in_game(addr))
     print(f"[DISCONNECTED] {addr[1]} has disconnected")
-    conn.send(pickle.dumps({"type":DISCONNECT_MESSAGE}))
+    # conn.send(pickle.dumps({"type":DISCONNECT_MESSAGE}))
+    conn.close()
 
 def start():
     global CONNECTIONS

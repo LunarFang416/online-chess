@@ -148,12 +148,14 @@ class Board:
             if self.is_selected == self.board[adj_x][adj_y]:
                 self.is_selected = None
                 return True
+                print("2222222")
             self.is_selected = None
 
         if self.board[adj_x][adj_y].piece and self.board[adj_x][adj_y].player_color == self.color:
             self.board[adj_x][adj_y].is_selected()
             self.is_selected = self.board[adj_x][adj_y]
             self.prospective_plays(self.is_selected)
+            print("111111")
             return True
         return False
 
