@@ -61,8 +61,15 @@ class Client:
                 self.win = data["win"]
             
             if data["type"] == BOARD_UPDATE:
-                self.board.board = data["data"]
+                self.board.board = data["data"]["board"]
+                self.board.white_captured = data["data"]["white_captured"]
+                self.board.black_captured = data["data"]["black_captured"]
                 self.your_move = True
+                for i in self.board.white_captured:
+                    print(i)
+                    
+                for i in self.board.black_captured:
+                    print(i)
             
             if data["type"] == DISCONNECT_MESSAGE:
                 self.in_game = False

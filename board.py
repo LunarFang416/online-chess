@@ -78,6 +78,8 @@ class Board:
         self.is_helper_on = False
         self.possible_moves = []
         self.possible_targets = []
+        self.white_captured = []
+        self.black_captured = []
 
         self.board = [[None for i in range(8)] for j in range(8)]
         self.board_color_scheme = [['' for i in range(8)] for j in range(8)]
@@ -146,24 +148,18 @@ class Board:
             
             if (adj_x, adj_y) in self.possible_targets:
                 self.board[adj_x][adj_y].eliminated = True
-                
+
+                if self.board[adj_x][adj_y].piece.color:
+                    self.white_captured.append(self.board[adj_x][adj_y].piece)
+                else:
+                    self.black_captured.append(self.board[adj_x][adj_y].piece)
+
                 if type(self.is_selected.piece).__name__ == "Pawn":
                     self.is_selected.piece.pawn_move += 1
                 if type(self.is_selected.piece).__name__ == "King" or type(self.is_selected.piece).__name__ == "Rook":
                     self.is_selected.piece.moved = True
-                self.swap_positions(self.is_selected, self.board[adj_x][adj_y])
+                self.swap_positions(self.is_selected, self.board[adj_x][adj_y], eliminate=True)
                 self.is_selected = None
-                print("WHITE")
-                for row in self.board:
-                    for square in row:
-                        if square.eliminated and square.piece.color:
-                            print(square)
-
-                print("BLACK")
-                for row in self.board:
-                    for square in row:
-                        if square.eliminated and (not square.piece.color):
-                            print(square)
 
                 return MOVE_PLAYED
 
@@ -192,10 +188,17 @@ class Board:
         for x, y in self.possible_targets:
             self.board[x][y].neutralize()
 
-    def swap_positions(self, sq1: Square, sq2: Square):
+    def swap_positions(self, sq1: Square, sq2: Square, eliminate=False):
         x1, y1, sq_x1, sq_y1 = sq1.x_pos, sq1.y_pos, sq1.sq_x, sq1.sq_y
         x2, y2, sq_x2, sq_y2 = sq2.x_pos, sq2.y_pos, sq2.sq_x, sq2.sq_y
         nc1, nc2 = sq1.neutral_color, sq2.neutral_color
         sq2.update(x1, y1, sq_x1, sq_y1, nc1)
         sq1.update(x2, y2, sq_x2, sq_y2, nc2)
         self.board[x1][y1], self.board[x2][y2] = sq2, sq1
+        if eliminate:
+            self.board[x1][y1].piece.in_game = False
+            self.board[x1][y1].piece = None
+            self.board[x1][y1].player_color = None
+    
+    def pawn_imprisonment(self):
+        pass
