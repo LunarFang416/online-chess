@@ -5,8 +5,9 @@ from client import Client
 
 pygame.init()
 
-WIDTH, HEIGHT = 700, 700
+WIDTH, HEIGHT = 900, 700
 BOARD_WIDTH, BOARD_HEIGHT = 600, 600
+X_OFFSET, Y_OFFSET = int((WIDTH - BOARD_WIDTH) / 2), int((HEIGHT - BOARD_HEIGHT) / 2)
 MOVE_PLAYED = "!MOVE_PLAYED"
 BOARD_UPDATE = "!BOARD_UPDATE"
 GAME_OVER = "!GAME_OVER"
@@ -39,15 +40,15 @@ while True:
             exit()
         count = 0
         while count == 0:
-            print(f"{client.game >= 2} and {client.your_move} and {(not client.game_over)}")
+            # print(f"{client.game >= 2} and {client.your_move} and {(not client.game_over)}")
             count += 1
         if event.type == pygame.MOUSEBUTTONDOWN and client.game >= 2 and client.your_move and (not client.game_over):
             x, y = event.pos
-            x , y = x - 50, y - 50
+            x , y = x - X_OFFSET, y - Y_OFFSET
             # Sending it in y - 50, and x - 50 to align coordinates
             if 0 <= x <= BOARD_WIDTH and 0 <= y <= BOARD_HEIGHT:
                 move = b.select_sqaure(y, x)
-                print(move)
+                # print(move)
                 if move == MOVE_PLAYED:
                     is_end = False
                     if not client.color: 

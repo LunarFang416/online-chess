@@ -1,5 +1,6 @@
 import socket, pickle, threading
 from board import Board
+from sys import exit
 
 HEADER = 4096
 PORT = 5050
@@ -29,6 +30,7 @@ class Client:
         self.in_game = True
         self.your_move = self.data["color"]
         self.thread = threading.Thread(target=self.listen)
+        self.thread.daemon = True
         self.thread.start()
 
     def connect(self):
@@ -37,6 +39,7 @@ class Client:
 
     def disconnect(self):
         self.send({"type": DISCONNECT_MESSAGE})
+        exit()
 
     def send(self, data):
         try:

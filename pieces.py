@@ -92,6 +92,7 @@ class King(ChessPiece):
     def __init__(self, x_pos: int, y_pos: int, color: int, **kwargs):
         super(King, self).__init__(x_pos, y_pos, color, **kwargs)
         self.image = King.COLOR[self.color]
+        self.moved = False
     
     def possible_moves(self, board: List[List[int]]) -> Tuple[List[List[int]], List[List[int]]]:
         return self.possible_plays(board, self.x_pos, self.y_pos, King.directions, 1)
@@ -104,7 +105,48 @@ class King(ChessPiece):
                     all_white_targets += square.piece.possible_moves(board)[1]
         if (self.x_pos, self.y_pos) in all_white_targets:
             return True
-        return False 
+        return False
+    
+    def can_castle(self, board: List[List[int]], rook: ChessPiece) -> bool:
+        if self.moved or rook.moved or self.is_check_mate(board): return False
+        c_y = self.y_pos + 1
+        if c_y > rook.y_pos:
+            while c_y > rook.y_pos:
+                if board[self.x_pos][c_y].piece != None: return False
+                c_y -= 1
+        else:
+            while c_y < rook.y_pos:
+                if board[self.x_pos][c_y].piece != None: return False
+                c_y += 1
+        all_white_targets = []
+        for row in board:
+            for square in row:
+                if square.piece and square.piece.color == (not self.color):
+                    all_white_targets += square.piece.possible_moves(board)[0]
+
+        if rook.y_pos > self.y_pos:
+            for i in range(1, 3):
+                if (self.x_pos, self.y_pos + i) in all_white_targets: return False
+        if rook.y_pos < self.y_pos:
+            for i in range(1, 3):
+                if (self.x_pos, self.y_pos - i) in all_white_targets: return False
+
+
+
+        return True
+
+
+class Rook(ChessPiece):
+    directions = [NORTH, SOUTH, EAST, WEST]
+    COLOR = [BLACK_ROOK_IMAGE, WHITE_ROOK_IMAGE]
+
+    def __init__(self, x_pos: int, y_pos: int, color: int, **kwargs):
+        super(Rook, self).__init__(x_pos, y_pos, color, **kwargs)
+        self.image = Rook.COLOR[self.color]
+        self.moved = False
+
+    def possible_moves(self, board: List[List[int]]) -> Tuple[List[List[int]], List[List[int]]]:
+        return self.possible_plays(board, self.x_pos, self.y_pos, Rook.directions, 8)
 
 class Bishop(ChessPiece):
     directions = [NORTH_WEST, SOUTH_WEST, NORTH_EAST, SOUTH_EAST]
@@ -116,17 +158,6 @@ class Bishop(ChessPiece):
     
     def possible_moves(self, board: List[List[int]]) -> Tuple[List[List[int]], List[List[int]]]:
         return self.possible_plays(board, self.x_pos, self.y_pos, Bishop.directions, 8)
-
-class Rook(ChessPiece):
-    directions = [NORTH, SOUTH, EAST, WEST]
-    COLOR = [BLACK_ROOK_IMAGE, WHITE_ROOK_IMAGE]
-
-    def __init__(self, x_pos: int, y_pos: int, color: int, **kwargs):
-        super(Rook, self).__init__(x_pos, y_pos, color, **kwargs)
-        self.image = Rook.COLOR[self.color]
-
-    def possible_moves(self, board: List[List[int]]) -> Tuple[List[List[int]], List[List[int]]]:
-        return self.possible_plays(board, self.x_pos, self.y_pos, Rook.directions, 8)
 
 class Pawn(ChessPiece):
     directions = [[SOUTH], [NORTH]]

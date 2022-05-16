@@ -47,7 +47,7 @@ def new_game(conn, addr, game):
         if pickle.loads(msg)["type"] == DISCONNECT_MESSAGE: 
             if is_in_game(addr):
                 print(f"[{addr[1]} REMOVED] {addr} removed")
-                print(game)
+                # print(game)
                 if game:
                     for clients in game:
                         clients[1].sendall(pickle.dumps({"type": CONNECTION_REMOVED, "data": len(game) - 1}))
@@ -89,7 +89,6 @@ def handle_client(conn, addr):
 def start():
     global CONNECTIONS
     CONNECTIONS = 0
-    print(CURRENT_GAMES)
     print(f"[STARTING] server is starting on port {PORT}")
     server.listen()
     while True:
